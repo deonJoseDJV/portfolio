@@ -82,108 +82,126 @@ export default function Home() {
       <Navbar onBookCall={() => setContactOpen(true)} />
 
       {/* ================= HERO ================= */}
-      <section
-        id="home"
-        className="relative min-h-screen px-6 pt-36 flex flex-col items-center text-center"
-      >
-        {/* MEMOJI */}
-        <img
-          src="/memoji.png"
-          alt="Memoji"
-          className="
-            w-[120px] sm:w-[140px] md:w-[160px]
-            rotate-6 translate-x-2 translate-y-[-3rem]
-            transition-transform duration-300 ease-out
-            group-hover:-translate-y-2
-            drop-shadow-[0_25px_60px_rgba(0,0,0,0.6)]
-          "
-        />
+      {/* ================= HERO ================= */}
+<section
+  id="home"
+  className="
+    relative min-h-[90vh] sm:min-h-screen
+    px-4 sm:px-6
+    pt-24 sm:pt-32 md:pt-36
+    flex flex-col items-center text-center
+  "
+>
+  {/* MEMOJI */}
+  <img
+    src="/memoji.png"
+    alt="Memoji"
+    className="
+      w-[100px] sm:w-[130px] md:w-[160px]
 
-        {/* HEADING */}
-        <h1 className="mt-[-8rem] text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight leading-tight">
-          Hi, I'm <span className="name-shine">Deon Jose</span>
-        </h1>
+      /* ✅ MOBILE LIFT */
+      -translate-y-6 sm:-translate-y-10 md:-translate-y-12
 
-        {/* SUBTEXT */}
-        <p className="mt-3 text-sm sm:text-base text-black/60 dark:text-white/60 max-w-xl">
-          Ask me anything about my work, skills, or projects.
-        </p>
+      rotate-6 translate-x-2
+      transition-transform duration-300 ease-out
+      group-hover:-translate-y-2
+      drop-shadow-[0_25px_60px_rgba(0,0,0,0.6)]
+    "
+  />
 
-        {/* ================= CHATBOT BOX ================= */}
-        <div className="mt-14 w-full max-w-4xl">
-          <div
+  {/* HEADING */}
+  <h1
+    className="
+      mt-[-2.5rem] sm:mt-[-5rem] md:mt-[-8rem]
+      text-2xl sm:text-4xl md:text-5xl
+      font-semibold tracking-tight leading-tight
+    "
+  >
+    Hi, I'm <span className="name-shine">Deon Jose</span>
+  </h1>
+
+  {/* SUBTEXT */}
+  <p className="mt-3 text-sm sm:text-base text-black/60 dark:text-white/60 max-w-xl px-2">
+    Ask me anything about my work, skills, or projects.
+  </p>
+
+  {/* ================= CHATBOT BOX ================= */}
+  <div className="mt-10 sm:mt-14 w-full max-w-4xl">
+    <div
+      className="
+        rounded-2xl sm:rounded-3xl border
+        border-black/10 dark:border-white/10
+        bg-white/70 dark:bg-white/[0.05]
+        backdrop-blur-2xl
+        p-6 sm:p-10 md:p-12
+        shadow-[0_20px_60px_rgba(0,0,0,0.12)]
+        dark:shadow-[0_30px_100px_rgba(0,0,0,0.55)]
+      "
+    >
+      <p className="text-black/50 dark:text-white/50 text-sm mb-6 min-h-[24px]">
+        {loading
+          ? "Thinking..."
+          : reply || "Ask me anything about Deon..."}
+      </p>
+
+      {/* QUICK BUTTONS */}
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+        {["Work", "About me", "Skills", "Contact"].map((item) => (
+          <button
+            key={item}
+            onClick={() => sendMessage(item)}
             className="
-              rounded-3xl border
+              px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border
               border-black/10 dark:border-white/10
-              bg-white/70 dark:bg-white/[0.05]
-              backdrop-blur-2xl
-              p-10 sm:p-12
-              shadow-[0_30px_100px_rgba(0,0,0,0.15)]
-              dark:shadow-[0_30px_100px_rgba(0,0,0,0.55)]
+              bg-black/[0.03] dark:bg-white/[0.04]
+              text-xs sm:text-sm text-black/70 dark:text-white/70
+              hover:bg-black/[0.06] dark:hover:bg-white/[0.10]
+              transition
             "
           >
-            <p className="text-black/50 dark:text-white/50 text-sm mb-6 min-h-[24px]">
-              {loading
-                ? "Thinking..."
-                : reply || "Ask me anything about Deon..."}
-            </p>
+            {item}
+          </button>
+        ))}
+      </div>
 
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
-              {["Work", "About me", "Skills", "Contact"].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => sendMessage(item)}
-                  className="
-                    px-5 py-2.5 rounded-full border
-                    border-black/10 dark:border-white/10
-                    bg-black/[0.03] dark:bg-white/[0.04]
-                    text-sm text-black/70 dark:text-white/70
-                    hover:bg-black/[0.06] dark:hover:bg-white/[0.10]
-                    transition
-                  "
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
+      {/* INPUT */}
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+        placeholder="Ask anything about Deon..."
+        className="
+          w-full rounded-full
+          bg-white dark:bg-black/50
+          border border-black/10 dark:border-white/10
+          px-5 sm:px-6 py-3 sm:py-4 text-sm outline-none
+          placeholder:text-black/30 dark:placeholder:text-white/30
+          focus:border-primary/50
+        "
+      />
+    </div>
+  </div>
 
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="Ask anything about Deon..."
-              className="
-                w-full rounded-full
-                bg-white dark:bg-black/50
-                border border-black/10 dark:border-white/10
-                px-6 py-4 text-sm outline-none
-                placeholder:text-black/30 dark:placeholder:text-white/30
-                focus:border-primary/50
-              "
-            />
-          </div>
-        </div>
-
-        {/* SCROLL INDICATOR */}
-        <div className="mt-12 flex flex-col items-center text-black/40 dark:text-white/40">
-          <span className="text-sm mb-2">Scroll to explore</span>
-          <svg
-            className="animate-bounce"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path
-              d="M6 9l6 6 6-6"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-      </section>
+  {/* SCROLL INDICATOR */}
+  <div className="mt-10 sm:mt-12 flex flex-col items-center text-black/40 dark:text-white/40">
+    <span className="text-xs sm:text-sm mb-2">Scroll to explore</span>
+    <svg
+      className="animate-bounce"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M6 9l6 6 6-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </div>
+</section>
 
       {/* SECTIONS */}
       <div className="relative z-10">

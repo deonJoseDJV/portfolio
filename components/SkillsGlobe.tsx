@@ -3,7 +3,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, OrbitControls, Html, useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 
 /* ================= TYPES ================= */
 
@@ -47,11 +47,24 @@ const categoryColor: Record<Skill["category"], string> = {
   db: "#ef4444",
 };
 
+/* ================= RESPONSIVE HOOK ================= */
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  return isMobile;
+}
+
 /* ================= GOLDEN SPHERE ================= */
 
-function getSpherePoint(index: number, total: number) {
-  const radius = 4.0;
-
+function getSpherePoint(index: number, total: number, radius: number) {
   const phi = Math.acos(1 - (2 * (index + 0.5)) / total);
   const theta = Math.PI * (1 + Math.sqrt(5)) * (index + 0.5);
 
@@ -64,7 +77,7 @@ function getSpherePoint(index: number, total: number) {
 
 /* ================= GLOBE ================= */
 
-function Globe() {
+function Globe({ isMobile }: { isMobile: boolean }) {
   const ref = useRef<THREE.Mesh>(null);
 
   useFrame(() => {
@@ -73,7 +86,7 @@ function Globe() {
 
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[2.8, 64, 64]} />
+      <sphereGeometry args={[isMobile ? 2.2 : 2.8, 64, 64]} />
       <meshStandardMaterial
         color="#1E1D26"
         wireframe
@@ -92,20 +105,25 @@ function FloatingIcon({
   skill,
   active,
   setActive,
+  isMobile,
 }: {
   index: number;
   total: number;
   skill: Skill;
   active: string | null;
   setActive: (v: string | null) => void;
+  isMobile: boolean;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const { camera } = useThree();
   const texture = useTexture(skill.texture);
 
+  // ✅ responsive radius
+  const radius = isMobile ? 3.1 : 4.0;
+
   const basePosition = useMemo(
-    () => getSpherePoint(index, total),
-    [index, total]
+    () => getSpherePoint(index, total, radius),
+    [index, total, radius]
   );
 
   useFrame(({ clock }) => {
@@ -143,9 +161,10 @@ function FloatingIcon({
         onClick={() => setActive(isActive ? null : skill.name)}
         onPointerEnter={() => setActive(skill.name)}
         onPointerLeave={() => setActive(null)}
-        scale={isActive ? 1.25 : 1}
+        scale={isActive ? (isMobile ? 1.15 : 1.25) : isMobile ? 0.85 : 1}
       >
-        <planeGeometry args={[0.75, 0.75]} />
+        {/* ✅ responsive icon size */}
+        <planeGeometry args={[isMobile ? 0.6 : 0.75, isMobile ? 0.6 : 0.75]} />
 
         <meshBasicMaterial
           map={texture}
@@ -167,9 +186,8 @@ function FloatingIcon({
         )}
 
         {isActive && (
-          <Html distanceFactor={8}>
-            {/* ✅ LIGHT/DARK SAFE */}
-            <div className="px-3 py-1 rounded-full bg-black/80 dark:bg-black/80 backdrop-blur-md text-xs text-white border border-white/10 whitespace-nowrap">
+          <Html distanceFactor={isMobile ? 6 : 8}>
+            <div className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md text-xs text-white border border-white/10 whitespace-nowrap">
               {skill.name}
             </div>
           </Html>
@@ -183,18 +201,24 @@ function FloatingIcon({
 
 export default function SkillsGlobe() {
   const [active, setActive] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   return (
-    <div className="relative w-full h-[650px] md:h-[720px]">
-      {/* subtle light-mode fix */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_65%)] dark:bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_65%)]" />
+    <div className="relative w-full h-[520px] sm:h-[600px] md:h-[720px]">
+      {/* glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_65%)]" />
 
-      <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+      <Canvas
+        camera={{
+          position: [0, 0, isMobile ? 7 : 8], // ✅ responsive camera
+          fov: isMobile ? 55 : 50,
+        }}
+      >
         <ambientLight intensity={0.9} />
         <pointLight position={[10, 10, 10]} intensity={1.2} />
         <pointLight position={[-10, -10, -10]} intensity={0.6} />
 
-        <Globe />
+        <Globe isMobile={isMobile} />
 
         {skills.map((skill, i) => (
           <FloatingIcon
@@ -204,6 +228,7 @@ export default function SkillsGlobe() {
             skill={skill}
             active={active}
             setActive={setActive}
+            isMobile={isMobile}
           />
         ))}
 

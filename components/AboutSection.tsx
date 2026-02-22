@@ -46,11 +46,12 @@ export default function AboutSection() {
       id="about"
       className="relative w-full max-w-6xl mx-auto px-4 sm:px-5 pb-20 sm:pb-28 pt-10 sm:pt-14"
     >
-      {/* GRID WRAPPER */}
+      {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+        
         {/* TOP LEFT */}
         <div
-          className="md:col-span-1 rounded-2xl glass-card p-0 overflow-hidden cursor-pointer group aspect-square sm:aspect-auto"
+          className="md:col-span-1 rounded-2xl glass-card overflow-hidden cursor-pointer group aspect-[4/3] sm:aspect-auto"
           onMouseEnter={() => handleMouseEnter("/deonImage.jpeg")}
           onMouseLeave={handleMouseLeave}
         >
@@ -67,19 +68,19 @@ export default function AboutSection() {
           onMouseEnter={() => handleMouseEnter("/univ.png")}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 text-[6px] sm:text-[8px] tracking-[0.2em] text-primary border border-primary/30 px-2 sm:px-3 py-0.5 rounded-full bg-primary/5 whitespace-nowrap z-20 transition-all duration-300 hover:bg-primary/20">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 text-[7px] sm:text-[8px] tracking-[0.2em] text-primary border border-primary/30 px-3 py-0.5 rounded-full bg-primary/5 whitespace-nowrap z-20">
             HOVER TO READ MORE
           </div>
 
-          <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+          <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               {
                 title: "UNIVERSITY",
-                desc: "Computer Science undergraduate at College of Engineering Trivandrum (CET), focused on building scalable software systems and mastering core problem-solving fundamentals.",
+                desc: "Computer Science undergraduate at College of Engineering Trivandrum (CET), focused on scalable systems and strong problem-solving.",
               },
               {
                 title: "PROJECTS & ENGINEERING",
-                desc: "Focused on building real-world full-stack, AI/ML, and data-driven applications using Next.js, MERN, and modern machine learning workflows.",
+                desc: "Building real-world full-stack, AI/ML, and data-driven applications using Next.js, MERN, and modern ML workflows.",
               },
               {
                 title: "COMPETITIONS",
@@ -88,12 +89,12 @@ export default function AboutSection() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="rounded-xl glass-card p-3 flex flex-col subcard-hover relative z-10 hover:shadow-lg transition-shadow"
+                className="rounded-xl glass-card p-4 flex flex-col subcard-hover relative z-10 hover:shadow-lg transition-shadow"
               >
-                <h3 className="text-xs sm:text-sm font-semibold text-black dark:text-white mb-1 sm:mb-2">
+                <h3 className="text-sm font-semibold text-black dark:text-white mb-2">
                   {item.title}
                 </h3>
-                <p className="text-black/60 dark:text-white/60 text-[9px] sm:text-[10px] leading-relaxed">
+                <p className="text-black/60 dark:text-white/60 text-xs leading-relaxed">
                   {item.desc}
                 </p>
               </div>
@@ -101,28 +102,25 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* LEFT COLUMN (Mindset) */}
+        {/* LEFT COLUMN — MINDSET */}
         <div
           className="md:col-span-1 md:row-span-2 rounded-2xl glass-card p-5 sm:p-6 flex flex-col relative overflow-hidden cursor-pointer group"
           onMouseEnter={() => handleMouseEnter("/gym.png")}
           onMouseLeave={handleMouseLeave}
         >
-          <h3 className="text-xl sm:text-2xl font-bold text-primary mb-3 sm:mb-4">
-            Mindset
-          </h3>
+          <h3 className="text-2xl font-bold text-primary mb-4">Mindset</h3>
 
-          <p className="text-black/70 dark:text-white/70 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
-            Building more than software. My passions provide the discipline and
-            focus I need to grow.
+          <p className="text-black/70 dark:text-white/70 text-sm leading-relaxed mb-4">
+            Building more than software. My passions provide the discipline and focus I need to grow.
           </p>
 
-          <div className="relative w-full flex-1 min-h-[80px] sm:min-h-[120px] my-2">
+          <div className="relative w-full flex-1 min-h-[110px] my-2">
             {images.map((src, index) => (
               <img
                 key={index}
                 src={src}
                 alt={`Mindset activity ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ease-in-out transform ${
+                className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ease-in-out ${
                   index === imageIndex
                     ? "opacity-100 translate-y-0 scale-100"
                     : "opacity-0 translate-y-4 scale-95"
@@ -131,28 +129,16 @@ export default function AboutSection() {
             ))}
           </div>
 
-          <p className="text-black/60 dark:text-white/60 text-xs sm:text-sm leading-relaxed mt-3 sm:mt-4">
+          <p className="text-black/60 dark:text-white/60 text-sm leading-relaxed mt-4">
             Mastering body and mind is my path to excellence.
           </p>
-
-          <div className="absolute bottom-3 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setImageIndex(index)}
-                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                  index === imageIndex
-                    ? "w-5 bg-primary"
-                    : "bg-black/30 dark:bg-white/30"
-                }`}
-              />
-            ))}
-          </div>
         </div>
 
         {/* CENTER COLUMN */}
-        <div className="md:col-span-1 md:row-span-2 flex flex-col gap-1 h-full">
-          <div className="rounded-2xl glass-card p-0 overflow-hidden relative flex-1 min-h-[200px] sm:min-h-0">
+        <div className="md:col-span-1 md:row-span-2 flex flex-col gap-3 h-full">
+          
+          {/* IMAGE */}
+          <div className="rounded-2xl glass-card overflow-hidden relative flex-1 min-h-[220px]">
             <div
               className={`absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent transition-opacity duration-300 pointer-events-none z-10 ${
                 isTransitioning ? "opacity-100" : "opacity-0"
@@ -162,33 +148,27 @@ export default function AboutSection() {
               key={hoverImage}
               src={hoverImage}
               alt="Dynamic content"
-              className={`w-full h-full object-cover object-center transition-all duration-700 ease-in-out transform ${
+              className={`w-full h-full object-cover object-center transition-all duration-700 ${
                 isTransitioning
                   ? "scale-110 opacity-50 rotate-1"
                   : "scale-100 opacity-100 rotate-0"
               }`}
             />
-            <div
-              className={`absolute inset-0 bg-black/30 transition-opacity duration-700 ${
-                isTransitioning ? "opacity-30" : "opacity-0"
-              }`}
-            />
           </div>
 
-          {/* ENHANCED LOCATION CARD */}
+          {/* LOCATION */}
           <div
-            className="rounded-2xl glass-card p-0 overflow-hidden cursor-pointer group relative min-h-[80px] sm:min-h-0"
-            style={{ height: "auto" }}
+            className="rounded-2xl glass-card overflow-hidden cursor-pointer group relative min-h-[110px]"
             onMouseEnter={() => handleMouseEnter("/trivandrumImage.png")}
             onMouseLeave={handleMouseLeave}
           >
             <img
               src="/loc.jpeg"
               alt="India location"
-              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
+              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
             />
-            {/* Location overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4 text-white">
               <div className="text-sm font-semibold">TRIVANDRUM, INDIA</div>
               <div className="text-xs opacity-80">8.5241° N, 76.9366° E</div>
               <div className="text-xs opacity-60">GMT +5:30</div>
@@ -196,29 +176,25 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* ENHANCED RIGHT COLUMN (CRAFT) */}
+        {/* RIGHT COLUMN — CRAFT */}
         <div
-          className="md:col-span-1 md:row-span-2 rounded-2xl glass-card p-4 sm:p-5 flex flex-col relative overflow-hidden cursor-pointer group"
+          className="md:col-span-1 md:row-span-2 rounded-2xl glass-card p-5 flex flex-col relative overflow-hidden cursor-pointer group"
           onMouseEnter={() => handleMouseEnter("/craft2.png")}
           onMouseLeave={handleMouseLeave}
         >
-          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-2 sm:mb-3">
-            Craft
-          </h3>
+          <h3 className="text-3xl font-bold text-primary mb-3">Craft</h3>
 
-          {/* Quote with italics */}
-          <p className="text-black/80 dark:text-white/80 text-sm sm:text-base lg:text-xl leading-relaxed mb-1 sm:mb-2 italic">
+          <p className="text-black/80 dark:text-white/80 text-base leading-relaxed italic mb-2">
             "Building scalable apps, websites, and automations."
           </p>
 
-          <p className="text-black/60 dark:text-white/60 text-sm sm:text-base lg:text-xl leading-relaxed mb-3 sm:mb-4">
-            I understand what advantages modern tech can provide,
-            helping me advise on the solutions a business actually needs.
+          <p className="text-black/60 dark:text-white/60 text-sm leading-relaxed mb-4">
+            I understand what advantages modern tech can provide, helping me advise on the solutions a business actually needs.
           </p>
 
-          {/* Floating tags with enhanced styling */}
+          {/* ✅ FLOATING TECH STRIP RESTORED */}
           <div
-            className="relative w-full mb-3 sm:mb-4 py-1 sm:py-2"
+            className="relative w-full mb-4 py-2 overflow-hidden"
             style={{
               maskImage:
                 "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
@@ -226,43 +202,36 @@ export default function AboutSection() {
                 "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
             }}
           >
-            <div
-              className="flex gap-2 sm:gap-3 animate-float items-center"
-              style={{ width: "max-content" }}
-            >
+            <div className="flex gap-3 items-center animate-float w-max">
               {[
                 { icon: SiTypescript, color: "text-blue-400", name: "TS" },
                 { icon: SiFlutter, color: "text-blue-500", name: "FLUTTER" },
                 { icon: SiPython, color: "text-yellow-400", name: "PYTHON" },
                 { icon: SiNodedotjs, color: "text-green-500", name: "NODE" },
-                { icon: SiTailwindcss, color: "text-cyan-400", name: "TAILWINDS" },
+                { icon: SiTailwindcss, color: "text-cyan-400", name: "TAILWIND" },
                 { icon: SiDocker, color: "text-blue-600", name: "DOCKER" },
                 { icon: SiGit, color: "text-orange-500", name: "GIT" },
               ].map((tech, i) => (
                 <span
                   key={i}
-                  className="text-white/70 text-[8px] sm:text-xs border border-white/15 bg-black/40 px-2 sm:px-4 py-1 sm:py-1.5 rounded-full whitespace-nowrap flex items-center gap-1 sm:gap-1.5 backdrop-blur-sm hover:bg-black/60 hover:border-primary/30 transition-all duration-300"
+                  className="text-white/70 text-xs border border-white/15 bg-black/40 px-4 py-1.5 rounded-full whitespace-nowrap flex items-center gap-1.5 backdrop-blur-sm hover:bg-black/60 hover:border-primary/30 transition-all duration-300"
                 >
-                  <tech.icon className={`${tech.color} text-[10px] sm:text-sm`} />
+                  <tech.icon className={`${tech.color} text-sm`} />
                   <span>{tech.name}</span>
                 </span>
               ))}
             </div>
           </div>
 
-          <div className="mt-auto space-y-1 sm:space-y-2">
-            <p className="text-black/60 dark:text-white/60 text-[10px] sm:text-xs leading-relaxed">
-              Active hackathon competitor focused on AI/ML, Data Science,
-              and full-stack. Open to meaningful collaborations.
+          <div className="mt-auto space-y-2">
+            <p className="text-black/60 dark:text-white/60 text-xs leading-relaxed">
+              Active hackathon competitor focused on AI/ML, Data Science, and full-stack. Open to meaningful collaborations.
             </p>
-            {/* Highlighted collaboration line */}
-            <div className="bg-primary/10 dark:bg-primary/20 rounded-lg p-2 text-black/70 dark:text-white/70 text-[10px] sm:text-xs font-medium border border-primary/20">
+
+            <div className="bg-primary/10 dark:bg-primary/20 rounded-lg p-2 text-black/70 dark:text-white/70 text-xs font-medium border border-primary/20">
               ● Open to collaboration & freelance
             </div>
           </div>
-
-          {/* Inner glow on hover */}
-          <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
         </div>
       </div>
     </section>
