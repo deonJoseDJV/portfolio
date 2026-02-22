@@ -1,65 +1,204 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Navbar from "@/components/Navbar";
+import AboutSection from "@/components/AboutSection";
+import ProjectsSection from "@/components/ProjectsSection";
+import SkillsSection from "@/components/SkillsSection";
+import OtherSection from "@/components/OtherSection";
+import ContactModal from "@/components/ContactModal";
 
 export default function Home() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [input, setInput] = useState("");
+  const [reply, setReply] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+
+  // ================= MOUSE SPOTLIGHT =================
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      el.style.setProperty("--x", `${e.clientX - rect.left}px`);
+      el.style.setProperty("--y", `${e.clientY - rect.top}px`);
+    };
+
+    el.addEventListener("mousemove", handleMove);
+    return () => el.removeEventListener("mousemove", handleMove);
+  }, []);
+
+  // ================= SEND MESSAGE =================
+  const sendMessage = async (text?: string) => {
+    const messageToSend = text ?? input;
+    if (!messageToSend.trim()) return;
+
+    try {
+      setLoading(true);
+      setReply("");
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: messageToSend,
+        }),
+      });
+
+      const data = await res.json();
+      setReply(data.reply);
+      setInput("");
+    } catch (err) {
+      setReply("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main
+      ref={ref}
+      className="
+        group relative min-h-screen overflow-hidden
+        bg-bgLight dark:bg-heroDark
+        text-black dark:text-white
+        transition-colors duration-300
+      "
+    >
+      {/* DOT GRID */}
+      <div className="pointer-events-none absolute inset-0 bg-dot-pattern opacity-70" />
+
+      {/* VIGNETTE GLOW */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15),transparent_60%)]" />
+
+      {/* HOVER SPOTLIGHT */}
+      <div className="hover-spotlight" />
+
+      <Navbar onBookCall={() => setContactOpen(true)} />
+
+      {/* ================= HERO ================= */}
+      <section
+        id="home"
+        className="relative min-h-screen px-6 pt-36 flex flex-col items-center text-center"
+      >
+        {/* MEMOJI */}
+        <img
+          src="/memoji.png"
+          alt="Memoji"
+          className="
+            w-[120px] sm:w-[140px] md:w-[160px]
+            rotate-6 translate-x-2 translate-y-[-3rem]
+            transition-transform duration-300 ease-out
+            group-hover:-translate-y-2
+            drop-shadow-[0_25px_60px_rgba(0,0,0,0.6)]
+          "
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* HEADING */}
+        <h1 className="mt-[-8rem] text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight leading-tight">
+          Hi, I'm <span className="name-shine">Deon Jose</span>
+        </h1>
+
+        {/* SUBTEXT */}
+        <p className="mt-3 text-sm sm:text-base text-black/60 dark:text-white/60 max-w-xl">
+          Ask me anything about my work, skills, or projects.
+        </p>
+
+        {/* ================= CHATBOT BOX ================= */}
+        <div className="mt-14 w-full max-w-4xl">
+          <div
+            className="
+              rounded-3xl border
+              border-black/10 dark:border-white/10
+              bg-white/70 dark:bg-white/[0.05]
+              backdrop-blur-2xl
+              p-10 sm:p-12
+              shadow-[0_30px_100px_rgba(0,0,0,0.15)]
+              dark:shadow-[0_30px_100px_rgba(0,0,0,0.55)]
+            "
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <p className="text-black/50 dark:text-white/50 text-sm mb-6 min-h-[24px]">
+              {loading
+                ? "Thinking..."
+                : reply || "Ask me anything about Deon..."}
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
+              {["Work", "About me", "Skills", "Contact"].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => sendMessage(item)}
+                  className="
+                    px-5 py-2.5 rounded-full border
+                    border-black/10 dark:border-white/10
+                    bg-black/[0.03] dark:bg-white/[0.04]
+                    text-sm text-black/70 dark:text-white/70
+                    hover:bg-black/[0.06] dark:hover:bg-white/[0.10]
+                    transition
+                  "
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              placeholder="Ask anything about Deon..."
+              className="
+                w-full rounded-full
+                bg-white dark:bg-black/50
+                border border-black/10 dark:border-white/10
+                px-6 py-4 text-sm outline-none
+                placeholder:text-black/30 dark:placeholder:text-white/30
+                focus:border-primary/50
+              "
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
         </div>
-      </main>
-    </div>
+
+        {/* SCROLL INDICATOR */}
+        <div className="mt-12 flex flex-col items-center text-black/40 dark:text-white/40">
+          <span className="text-sm mb-2">Scroll to explore</span>
+          <svg
+            className="animate-bounce"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M6 9l6 6 6-6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      </section>
+
+      {/* SECTIONS */}
+      <div className="relative z-10">
+        <div className="w-full h-px bg-black/10 dark:bg-white/5 max-w-6xl mx-auto mb-16" />
+        <AboutSection />
+        <ProjectsSection />
+        <SkillsSection />
+        <OtherSection />
+      </div>
+
+      {/* CONTACT MODAL */}
+      <ContactModal
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
+      />
+    </main>
   );
 }
