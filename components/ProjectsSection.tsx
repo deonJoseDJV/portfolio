@@ -55,14 +55,14 @@ export default function ProjectsSection() {
           PORTFOLIO
         </p>
 
-        <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+        <h2 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6">
           Featured{" "}
           <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-violet-500 bg-clip-text text-transparent">
             Projects
           </span>
         </h2>
 
-        <p className="text-white/60 text-lg max-w-2xl mx-auto">
+        <p className="text-black/60 dark:text-white/60 text-lg max-w-2xl mx-auto">
           A curated selection of projects that made me confident in building software.
         </p>
       </div>
@@ -74,12 +74,15 @@ export default function ProjectsSection() {
             key={project.id}
             onMouseEnter={() => setHoveredProject(project.id)}
             onMouseLeave={() => setHoveredProject(null)}
-            className="group relative rounded-3xl overflow-hidden cursor-pointer
-                       bg-white/[0.03] backdrop-blur-xl
-                       border border-white/10
-                       shadow-[0_0_40px_rgba(139,92,246,0.08)]
-                       hover:border-purple-400/40
-                       transition-all duration-500"
+            className="
+              group relative rounded-3xl overflow-hidden cursor-pointer
+              bg-white/[0.6] dark:bg-white/[0.03]
+              backdrop-blur-xl
+              border border-black/10 dark:border-white/10
+              shadow-[0_0_40px_rgba(139,92,246,0.08)]
+              hover:border-purple-400/40
+              transition-all duration-500
+            "
           >
             {/* ===== IMAGE ===== */}
             <div className="relative h-48 overflow-hidden">
@@ -102,20 +105,26 @@ export default function ProjectsSection() {
               </div>
 
               {/* type badge */}
-              <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs
-                              bg-white/10 backdrop-blur-md
-                              border border-white/20 text-primary">
+              <div
+                className="
+                  absolute top-4 right-4 px-3 py-1 rounded-full text-xs
+                  bg-white/60 dark:bg-white/10
+                  backdrop-blur-md
+                  border border-black/20 dark:border-white/20
+                  text-primary
+                "
+              >
                 {project.type}
               </div>
             </div>
 
             {/* ===== CONTENT ===== */}
             <div className="p-6">
-              <h3 className="text-2xl font-semibold text-white mb-2 group-hover:text-primary transition-colors">
+              <h3 className="text-2xl font-semibold text-black dark:text-white mb-2 group-hover:text-primary transition-colors">
                 {project.title}
               </h3>
 
-              <p className="text-white/60 text-sm leading-relaxed mb-4">
+              <p className="text-black/60 dark:text-white/60 text-sm leading-relaxed mb-4">
                 {project.description}
               </p>
 
@@ -124,9 +133,12 @@ export default function ProjectsSection() {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-white/40 text-xs px-3 py-1 rounded-full
-                               border border-white/10
-                               bg-white/[0.03]"
+                    className="
+                      text-black/50 dark:text-white/40
+                      text-xs px-3 py-1 rounded-full
+                      border border-black/10 dark:border-white/10
+                      bg-black/[0.03] dark:bg-white/[0.03]
+                    "
                   >
                     {tag}
                   </span>
@@ -138,14 +150,14 @@ export default function ProjectsSection() {
                 <a
                   href={project.github}
                   target="_blank"
-                  className="text-white/40 hover:text-primary transition"
+                  className="text-black/50 dark:text-white/40 hover:text-primary transition"
                 >
                   <FiGithub size={18} />
                 </a>
                 <a
                   href={project.live}
                   target="_blank"
-                  className="text-white/40 hover:text-primary transition"
+                  className="text-black/50 dark:text-white/40 hover:text-primary transition"
                 >
                   <FiExternalLink size={18} />
                 </a>
@@ -170,13 +182,17 @@ export default function ProjectsSection() {
           href="https://github.com/deonJoseDJV"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2
-                     bg-white/[0.04] backdrop-blur-xl
-                     border border-white/10
-                     hover:border-purple-400/40
-                     px-8 py-3 rounded-full
-                     text-white/80 hover:text-white
-                     transition-all duration-300"
+          className="
+            inline-flex items-center gap-2
+            bg-black/[0.05] dark:bg-white/[0.04]
+            backdrop-blur-xl
+            border border-black/10 dark:border-white/10
+            hover:border-purple-400/40
+            px-8 py-3 rounded-full
+            text-black/80 dark:text-white/80
+            hover:text-black dark:hover:text-white
+            transition-all duration-300
+          "
         >
           Explore all projects on GitHub
           <span className="transition-transform group-hover:translate-x-1">

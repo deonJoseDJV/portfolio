@@ -59,92 +59,95 @@ export default function OtherSection() {
     >
       {/* HEADER */}
       <div className="mb-20 text-center">
-        <h2 className="text-5xl md:text-6xl font-semibold text-white mb-6">
+        <h2 className="text-5xl md:text-6xl font-semibold text-black dark:text-white mb-6">
           More to{" "}
           <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
             Explore
           </span>
         </h2>
 
-        <p className="text-white/50 text-lg max-w-xl mx-auto">
+        <p className="text-black/60 dark:text-white/60 text-lg max-w-xl mx-auto">
           Check out these additional resources and connect with me
         </p>
       </div>
 
-      {/* ================= CARDS ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+      {/* CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-24">
         {exploreItems.map((item) => (
           <div
             key={item.id}
             onClick={() => handleCardClick(item.link)}
             className="
-              group relative rounded-3xl p-10 flex flex-col items-center text-center cursor-pointer
+              group relative rounded-3xl p-12 flex flex-col items-center text-center cursor-pointer
               
-              /* ✨ PREMIUM GLASS */
-              bg-white/[0.03]
+              bg-white/[0.03] dark:bg-white/[0.02]
               backdrop-blur-xl
-              border border-white/10
+              border border-black/10 dark:border-white/10
               
-              /* ✨ SOFT GLOW */
-              shadow-[0_10px_40px_rgba(139,92,246,0.15)]
+              shadow-xl dark:shadow-none
+              transition-all duration-500 ease-out
               
-              /* ✨ HOVER MAGIC */
-              transition-all duration-500
-              hover:scale-[1.025]
-              hover:border-white/20
-              hover:bg-white/[0.05]
-              hover:shadow-[0_20px_60px_rgba(139,92,246,0.25)]
+              hover:scale-105
+              hover:border-black/20 dark:hover:border-white/20
+              hover:bg-white/[0.06] dark:hover:bg-white/[0.04]
+              hover:shadow-2xl dark:hover:shadow-2xl
             "
           >
             {/* ICON BOX */}
             <div
               className={`
-                mb-6 rounded-2xl p-4
+                mb-8 rounded-2xl p-5
                 bg-gradient-to-br ${item.color}/20
-                border border-white/10
+                border border-black/10 dark:border-white/10
                 backdrop-blur-md
-                group-hover:scale-110
-                transition-transform duration-300
+                group-hover:scale-110 group-hover:-translate-y-1
+                transition-all duration-300
               `}
             >
-              <item.Icon className="w-7 h-7 text-white" />
+              <item.Icon className="w-8 h-8 text-black dark:text-white" />
             </div>
 
             {/* TITLE */}
             <h3
-              className={`text-3xl font-semibold mb-3 bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}
+              className={`text-4xl font-bold mb-4 bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}
             >
               {item.title}
             </h3>
 
             {/* DESCRIPTION */}
-            <p className="text-white/60 text-sm leading-relaxed max-w-xs">
+            <p className="text-black/60 dark:text-white/60 text-base leading-relaxed max-w-sm">
               {item.description}
             </p>
 
-            {/* EXPLORE */}
-            <div className="mt-6 flex items-center justify-center gap-2 text-white/70 group-hover:text-white transition">
-              <span className="text-sm font-medium">Explore</span>
-              <FiArrowRight className="group-hover:translate-x-1 transition" />
+            {/* EXPLORE LINK */}
+            <div className="
+              mt-8 flex items-center justify-center gap-2
+              text-black/70 dark:text-white/70 
+              group-hover:text-black dark:group-hover:text-white
+              font-medium
+              transition-all
+            ">
+              <span className="text-base">Explore</span>
+              <FiArrowRight className="group-hover:translate-x-2 transition-transform duration-300" />
             </div>
 
-            {/* ✨ SUBTLE INNER GLOW */}
+            {/* INNER GLOW */}
             <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
           </div>
         ))}
       </div>
 
-      {/* ================= FOOTER ================= */}
-      <div className="border-t border-white/10 pt-10">
+      {/* FOOTER */}
+      <div className="border-t border-black/10 dark:border-white/10 pt-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-white/40 text-sm">
+          <div className="text-black/40 dark:text-white/40 text-sm">
             PS • © 2026 Deon Jose
           </div>
 
-          <div className="text-white/40 text-sm">
+          <div className="text-black/40 dark:text-white/40 text-sm">
             Built with ❤️ using{" "}
-            <span className="text-purple-400">Next.js</span> &{" "}
-            <span className="text-purple-400">Tailwind</span>
+            <span className="text-purple-500 dark:text-purple-400">Next.js</span> &{" "}
+            <span className="text-purple-500 dark:text-purple-400">Tailwind</span>
           </div>
 
           <div className="flex items-center gap-5">
@@ -154,9 +157,9 @@ export default function OtherSection() {
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/40 hover:text-primary transition"
+                className="text-black/40 dark:text-white/40 hover:text-primary transition"
               >
-                <social.icon size={18} />
+                <social.icon size={20} />
               </a>
             ))}
           </div>

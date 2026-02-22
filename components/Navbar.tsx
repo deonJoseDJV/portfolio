@@ -5,14 +5,13 @@ import { Calendar, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface NavbarProps {
-  onBookCall: () => void; // ⭐ IMPORTANT
+  onBookCall: () => void;
 }
 
 export default function Navbar({ onBookCall }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
 
-  // ✅ Scroll spy
   useEffect(() => {
     const sections = ["home", "about", "projects", "skills", "other"];
 
@@ -35,7 +34,6 @@ export default function Navbar({ onBookCall }: NavbarProps) {
     return () => observer.disconnect();
   }, []);
 
-  // ✅ Smooth scroll
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -76,11 +74,12 @@ export default function Navbar({ onBookCall }: NavbarProps) {
         <button
           onClick={() => setOpen(!open)}
           className="sm:hidden backdrop-blur-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full w-12 h-12 flex items-center justify-center"
+          aria-label="Menu"
         >
           <Menu size={22} />
         </button>
 
-        {/* ⭐ RIGHT — BOOK CALL (DESKTOP) */}
+        {/* RIGHT — BOOK CALL (DESKTOP) */}
         <div className="absolute right-4 sm:right-6">
           <button
             onClick={onBookCall}
@@ -109,23 +108,23 @@ export default function Navbar({ onBookCall }: NavbarProps) {
               <button
                 key={id}
                 onClick={() => scrollToSection(id)}
-                className={`py-3 rounded-full transition ${
+                className={`min-h-[48px] py-3 rounded-full transition ${
                   active === id
                     ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white"
-                    : "text-white/70 hover:text-white"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
                 }`}
               >
                 {id.charAt(0).toUpperCase() + id.slice(1)}
               </button>
             ))}
 
-            {/* ⭐ MOBILE BOOK CALL */}
+            {/* MOBILE BOOK CALL */}
             <button
               onClick={() => {
                 setOpen(false);
                 onBookCall();
               }}
-              className="mt-4 w-full rounded-full border border-white/10 bg-white/5 py-3 flex items-center justify-center gap-2 text-white"
+              className="mt-4 min-h-[48px] w-full rounded-full border border-white/10 bg-white/5 py-3 flex items-center justify-center gap-2 text-white hover:bg-white/10 transition"
             >
               <Calendar size={22} />
               Book a Call

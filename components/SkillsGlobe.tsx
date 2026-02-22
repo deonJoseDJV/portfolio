@@ -68,7 +68,7 @@ function Globe() {
   const ref = useRef<THREE.Mesh>(null);
 
   useFrame(() => {
-    if (ref.current) ref.current.rotation.y += 0.0015; // slightly slower
+    if (ref.current) ref.current.rotation.y += 0.0015;
   });
 
   return (
@@ -101,7 +101,6 @@ function FloatingIcon({
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const { camera } = useThree();
-
   const texture = useTexture(skill.texture);
 
   const basePosition = useMemo(
@@ -112,7 +111,6 @@ function FloatingIcon({
   useFrame(({ clock }) => {
     if (!meshRef.current) return;
 
-    /* 🔥 SLOWER PREMIUM ORBIT */
     const t = clock.getElapsedTime() * 0.15;
 
     const rotated = basePosition.clone().applyAxisAngle(
@@ -121,11 +119,8 @@ function FloatingIcon({
     );
 
     meshRef.current.position.copy(rotated);
-
-    /* 👁 face camera */
     meshRef.current.lookAt(camera.position);
 
-    /* ✨ depth fade */
     const camDir = new THREE.Vector3();
     camera.getWorldDirection(camDir);
 
@@ -173,7 +168,8 @@ function FloatingIcon({
 
         {isActive && (
           <Html distanceFactor={8}>
-            <div className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md text-xs text-white border border-white/10 whitespace-nowrap">
+            {/* ✅ LIGHT/DARK SAFE */}
+            <div className="px-3 py-1 rounded-full bg-black/80 dark:bg-black/80 backdrop-blur-md text-xs text-white border border-white/10 whitespace-nowrap">
               {skill.name}
             </div>
           </Html>
@@ -190,7 +186,8 @@ export default function SkillsGlobe() {
 
   return (
     <div className="relative w-full h-[650px] md:h-[720px]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_65%)]" />
+      {/* subtle light-mode fix */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_65%)] dark:bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_65%)]" />
 
       <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
         <ambientLight intensity={0.9} />
