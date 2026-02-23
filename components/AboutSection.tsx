@@ -51,7 +51,7 @@ export default function AboutSection() {
 
         {/* TOP LEFT */}
         <div
-          className="md:col-span-1 rounded-2xl glass-card overflow-hidden cursor-pointer group h-[220px] sm:h-[240px]"
+          className="md:col-span-1 rounded-2xl glass-card overflow-hidden cursor-pointer group h-[200px] sm:h-[240px]"
           onMouseEnter={() => handleMouseEnter("/deonImage.jpeg")}
           onMouseLeave={handleMouseLeave}
         >
@@ -76,19 +76,21 @@ export default function AboutSection() {
             {[
               {
                 title: "UNIVERSITY",
-                desc: "Computer Science undergraduate at College of Engineering Trivandrum (CET), focused on scalable systems and strong problem-solving.",
+                desc: "Computer Science undergraduate at CET, focused on scalable systems and strong problem-solving.",
               },
               {
                 title: "PROJECTS & ENGINEERING",
-                desc: "Building real-world full-stack, AI/ML, and data-driven applications using Next.js, MERN, and modern ML workflows.",
+                desc: "Building real-world full-stack, AI/ML, and data-driven applications using Next.js and MERN.",
               },
               {
                 title: "COMPETITIONS",
-                desc: "Competitive programmer and hackathon enthusiast with podium finishes including 2nd place at IEDC Summit Code Battle.",
+                desc: "Competitive programmer and hackathon enthusiast with podium finishes including IEDC Summit Code Battle.",
               },
             ].map((item, i) => (
-              <div key={i} className="rounded-xl glass-card p-4 flex flex-col subcard-hover relative z-10 hover:shadow-lg transition-shadow" >
-
+              <div
+                key={i}
+                className="rounded-xl glass-card p-4 flex flex-col subcard-hover relative z-10 hover:shadow-lg transition-shadow"
+              >
                 <h3 className="text-sm font-semibold text-black dark:text-white mb-2">
                   {item.title}
                 </h3>
@@ -101,11 +103,11 @@ export default function AboutSection() {
         </div>
 
         {/* ================= BOTTOM ROW ================= */}
-        <div className="md:col-span-3 grid md:grid-cols-3 gap-4 sm:gap-5">
+        <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
 
           {/* LEFT — MINDSET */}
           <div
-            className="rounded-2xl glass-card p-5 sm:p-6 flex flex-col h-[420px]"
+            className="rounded-2xl glass-card p-5 sm:p-6 flex flex-col"
             onMouseEnter={() => handleMouseEnter("/gym.png")}
             onMouseLeave={handleMouseLeave}
           >
@@ -115,13 +117,14 @@ export default function AboutSection() {
               Building more than software. My passions provide the discipline and focus I need to grow.
             </p>
 
-            <div className="relative w-full flex-1 min-h-[160px]">
+            {/* ✅ MOBILE FIXED IMAGE */}
+            <div className="relative w-full h-[180px] md:flex-1 overflow-hidden rounded-xl">
               {images.map((src, index) => (
                 <img
                   key={index}
                   src={src}
                   alt={`Mindset activity ${index + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
+                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
                     index === imageIndex
                       ? "opacity-100 scale-100"
                       : "opacity-0 scale-105"
@@ -136,10 +139,10 @@ export default function AboutSection() {
           </div>
 
           {/* CENTER COLUMN */}
-          <div className="flex flex-col gap-3 h-[420px]">
+          <div className="flex flex-col gap-3">
 
-            {/* IMAGE — LOCKED */}
-            <div className="relative rounded-2xl glass-card overflow-hidden flex-[3]">
+            {/* ✅ MAIN IMAGE FIX */}
+            <div className="relative rounded-2xl glass-card overflow-hidden h-[300px] md:flex-[3]">
               <img
                 key={hoverImage}
                 src={hoverImage}
@@ -148,16 +151,16 @@ export default function AboutSection() {
               />
             </div>
 
-            {/* LOCATION — LOCKED */}
+            {/* LOCATION */}
             <div
-              className="relative rounded-2xl glass-card overflow-hidden flex-[1]"
+              className="relative rounded-2xl glass-card overflow-hidden h-[120px] md:flex-[1]"
               onMouseEnter={() => handleMouseEnter("/trivandrumImage.png")}
               onMouseLeave={handleMouseLeave}
             >
               <img
                 src="/loc.jpeg"
                 alt="India location"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-covermb-4"
               />
 
              
@@ -166,7 +169,7 @@ export default function AboutSection() {
 
           {/* RIGHT — CRAFT */}
           <div
-            className="rounded-2xl glass-card p-5 flex flex-col h-[420px]"
+            className="rounded-2xl glass-card p-5 flex flex-col"
             onMouseEnter={() => handleMouseEnter("/craft2.png")}
             onMouseLeave={handleMouseLeave}
           >
