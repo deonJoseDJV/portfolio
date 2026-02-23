@@ -168,11 +168,7 @@ export default function AboutSection() {
               className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4 text-white">
-              <div className="text-sm font-semibold">TRIVANDRUM, INDIA</div>
-              <div className="text-xs opacity-80">8.5241° N, 76.9366° E</div>
-              <div className="text-xs opacity-60">GMT +5:30</div>
-            </div>
+          
           </div>
         </div>
 
