@@ -85,7 +85,7 @@ export default function AchievementsPage() {
     },
     {
   id: 12,
-  title: "Get Started with Databricks in Machine Learning",
+  title: "Databricks for Machine Learning",
   description:
     "Completed the 'Get Started with Databricks in Machine Learning' course, gaining hands-on experience with the Databricks platform for building and managing ML workflows.",
   image: "/databrick.jpeg",
