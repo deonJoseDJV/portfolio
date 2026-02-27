@@ -83,6 +83,13 @@ export default function AchievementsPage() {
         "Completed AlgoQuest: Exploring Competitive Programming workshop.",
       image: "/compprog.png",
     },
+    {
+  id: 12,
+  title: "Get Started with Databricks in Machine Learning",
+  description:
+    "Completed the 'Get Started with Databricks in Machine Learning' course, gaining hands-on experience with the Databricks platform for building and managing ML workflows.",
+  image: "/databricks.jpeg",
+}
   ];
 
   const featuredAchievement = achievements.find((a) => a.featured);
