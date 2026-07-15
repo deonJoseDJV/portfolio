@@ -11,9 +11,14 @@ export default function GuestbookPage() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
     const getSession = async () => {
       const {
         data: { session },
@@ -33,9 +38,10 @@ export default function GuestbookPage() {
     fetchMessages()
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [supabase])
 
   const fetchMessages = async () => {
+    if (!supabase) return
     const { data } = await supabase
       .from('guestbook')
       .select('*')
@@ -45,6 +51,7 @@ export default function GuestbookPage() {
   }
 
   const signInWithGithub = async () => {
+    if (!supabase) return
     await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
@@ -54,6 +61,7 @@ export default function GuestbookPage() {
   }
 
   const signInWithGoogle = async () => {
+    if (!supabase) return
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -63,11 +71,12 @@ export default function GuestbookPage() {
   }
 
   const signOut = async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
   }
 
   const submitMessage = async () => {
-    if (!user || !newMessage.trim() || submitting) return
+    if (!supabase || !user || !newMessage.trim() || submitting) return
 
     setSubmitting(true)
 

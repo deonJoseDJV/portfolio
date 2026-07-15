@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FiX,
   FiCalendar,
@@ -20,6 +20,16 @@ interface ContactModalProps {
 export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [showBooking, setShowBooking] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Close on Escape (but let BookingModal handle Escape when it's open)
+  useEffect(() => {
+    if (!isOpen || showBooking) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, showBooking, onClose]);
 
   if (!isOpen) return null;
 
@@ -122,9 +132,31 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               </button>
 
               <div className="flex gap-4 text-black/40 dark:text-white/40">
-                <FiGithub size={18} />
-                <FiLinkedin size={18} />
-                <FiMail size={18} />
+                <a
+                  href="https://github.com/deonJoseDJV"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
+                  className="hover:text-black dark:hover:text-white transition"
+                >
+                  <FiGithub size={18} />
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/deon-jose"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="hover:text-black dark:hover:text-white transition"
+                >
+                  <FiLinkedin size={18} />
+                </a>
+                <a
+                  href="mailto:deonjose27@gmail.com"
+                  aria-label="Email"
+                  className="hover:text-black dark:hover:text-white transition"
+                >
+                  <FiMail size={18} />
+                </a>
               </div>
             </div>
           </div>

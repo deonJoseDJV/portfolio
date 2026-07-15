@@ -1,14 +1,21 @@
 "use client";
 
 import {
-  SiTypescript,
-  SiFlutter,
-  SiPython,
+  SiReact,
+  SiNextdotjs,
   SiNodedotjs,
+  SiExpress,
   SiTailwindcss,
   SiDocker,
+  SiKubernetes,
+  SiSpringboot,
+  SiMongodb,
+  SiPostgresql,
+  SiCplusplus,
   SiGit,
 } from "react-icons/si";
+import { FaJava, FaAws } from "react-icons/fa";
+import { MapPin, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function AboutSection() {
@@ -17,6 +24,23 @@ export default function AboutSection() {
   const [imageIndex, setImageIndex] = useState(0);
 
   const images = ["/img11.jpeg", "/img2.png", "/img3.png"];
+
+  // Live local time in Deon's timezone (shown to any visitor, anywhere).
+  const [localTime, setLocalTime] = useState("");
+  useEffect(() => {
+    const update = () =>
+      setLocalTime(
+        new Date().toLocaleTimeString("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      );
+    update();
+    const id = setInterval(update, 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -141,29 +165,54 @@ export default function AboutSection() {
           {/* CENTER COLUMN */}
           <div className="flex flex-col gap-3">
 
-            {/* ✅ MAIN IMAGE FIX */}
-            <div className="relative rounded-2xl glass-card overflow-hidden h-[300px] md:flex-[3]">
+            {/* ✅ MAIN IMAGE — circular avatar (clips the baked-in black corners) */}
+            <div className="relative rounded-2xl glass-card overflow-hidden h-[300px] md:flex-[3] flex items-center justify-center p-4">
               <img
                 key={hoverImage}
                 src={hoverImage}
-                alt="Dynamic content"
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+                alt="Deon Jose"
+                className="h-full aspect-square object-cover object-center rounded-full ring-1 ring-black/10 dark:ring-white/10 shadow-lg transition-all duration-700"
               />
             </div>
 
             {/* LOCATION */}
             <div
-              className="relative rounded-2xl glass-card overflow-hidden h-[120px] md:flex-[1]"
+              className="group/loc relative rounded-2xl glass-card overflow-hidden h-[120px] md:flex-[1]"
               onMouseEnter={() => handleMouseEnter("/trivandrumImage.png")}
               onMouseLeave={handleMouseLeave}
             >
+              {/* Landmark background */}
               <img
-                src="/loc.jpeg"
-                alt="India location"
-                className="absolute inset-0 w-full h-full object-covermb-4"
+                src="/trivandrumImage.png"
+                alt="Trivandrum, India"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/loc:scale-105"
               />
+              {/* Dark scrim so text stays crisp over the photo */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/25" />
 
-             
+              {/* Real HTML text overlay */}
+              <div className="relative h-full flex flex-col justify-center px-4 sm:px-5">
+                <div className="flex items-center gap-1.5 text-primary mb-1">
+                  <MapPin size={13} />
+                  <span className="text-[9px] tracking-[0.3em] font-mono uppercase">
+                    Based in
+                  </span>
+                </div>
+
+                <h4 className="text-white font-bold text-lg sm:text-xl leading-tight">
+                  Trivandrum, India
+                </h4>
+
+                <p className="text-white/60 text-[11px] font-mono mt-1">
+                  8.5241° N, 76.9366° E
+                </p>
+
+                <p className="flex items-center gap-1.5 text-white/70 text-[11px] font-mono mt-1">
+                  <Clock size={11} className="text-primary" />
+                  <span>{localTime || "--:--"} local</span>
+                  <span className="text-white/30">· GMT+5:30</span>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -195,12 +244,19 @@ export default function AboutSection() {
             >
               <div className="flex gap-3 items-center animate-float w-max">
                 {[
-                  { icon: SiTypescript, color: "text-blue-400", name: "TS" },
-                  { icon: SiFlutter, color: "text-blue-500", name: "FLUTTER" },
-                  { icon: SiPython, color: "text-yellow-400", name: "PYTHON" },
+                  { icon: SiReact, color: "text-cyan-400", name: "REACT" },
+                  { icon: SiNextdotjs, color: "text-white", name: "NEXT.JS" },
                   { icon: SiNodedotjs, color: "text-green-500", name: "NODE" },
+                  { icon: SiExpress, color: "text-white", name: "EXPRESS" },
                   { icon: SiTailwindcss, color: "text-cyan-400", name: "TAILWIND" },
-                  { icon: SiDocker, color: "text-blue-600", name: "DOCKER" },
+                  { icon: FaJava, color: "text-red-500", name: "JAVA" },
+                  { icon: SiSpringboot, color: "text-green-600", name: "SPRING BOOT" },
+                  { icon: SiCplusplus, color: "text-blue-500", name: "C++" },
+                  { icon: SiMongodb, color: "text-green-500", name: "MONGODB" },
+                  { icon: SiPostgresql, color: "text-sky-500", name: "POSTGRESQL" },
+                  { icon: SiDocker, color: "text-blue-500", name: "DOCKER" },
+                  { icon: SiKubernetes, color: "text-blue-400", name: "KUBERNETES" },
+                  { icon: FaAws, color: "text-orange-400", name: "AWS" },
                   { icon: SiGit, color: "text-orange-500", name: "GIT" },
                 ].map((tech, i) => (
                   <span

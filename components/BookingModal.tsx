@@ -10,6 +10,41 @@ interface BookingModalProps {
   onClose: () => void;
 }
 
+interface SuccessData {
+  name: string;
+  email: string;
+  date: string;
+  time: string;
+  meetingLink: string;
+  calendarUrl: string;
+}
+
+// Builds a Google Calendar "add event" link. Slot times are IST (GMT+5:30),
+// converted to UTC for the template so the event lands at the right time.
+function buildGoogleCalendarUrl(
+  dateStr: string,
+  timeStr: string,
+  meetingLink: string
+) {
+  const [y, mo, d] = dateStr.split("-").map(Number);
+  const [h, mi] = timeStr.split(":").map(Number);
+  const startUtc = Date.UTC(y, mo - 1, d, h, mi) - 5.5 * 60 * 60 * 1000;
+  const endUtc = startUtc + 30 * 60 * 1000;
+  const fmt = (ms: number) =>
+    new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: "Call with Deon Jose",
+    dates: `${fmt(startUtc)}/${fmt(endUtc)}`,
+    details: `30-minute call.\nGoogle Meet: ${meetingLink}`,
+    location: meetingLink,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+const isValidEmail = (value: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
 export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -23,9 +58,19 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [successData, setSuccessData] = useState<any>(null);
-  
-  const supabase = createClient();
+  const [successData, setSuccessData] = useState<SuccessData | null>(null);
+
+  const [supabase] = useState(() => createClient());
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
 
   const today = new Date();
   const currentDay = today.getDate();
@@ -40,8 +85,8 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   // Fetch booked slots when date changes
   useEffect(() => {
     const fetchBookedSlots = async () => {
-      if (!selectedDate) return;
-      
+      if (!selectedDate || !supabase) return;
+
       setLoadingSlots(true);
       setError(null);
       try {
@@ -64,7 +109,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     };
 
     fetchBookedSlots();
-  }, [selectedDate, currentMonth, currentYear]);
+  }, [selectedDate, currentMonth, currentYear, supabase]);
 
   const goToPreviousMonth = () => {
     if (currentMonth === 1) {
@@ -111,6 +156,51 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     return bookedSlots.includes(time);
   };
 
+  // Disable slots that have already passed when "today" is selected.
+  const isTimePast = (time: string) => {
+    if (
+      selectedDate === currentDay &&
+      currentMonth === currentMonthNow &&
+      currentYear === currentYearNow
+    ) {
+      const [h, m] = time.split(":").map(Number);
+      const slot = new Date();
+      slot.setHours(h, m, 0, 0);
+      return slot.getTime() <= Date.now();
+    }
+    return false;
+  };
+
+  const emailTouchedInvalid = email.length > 0 && !isValidEmail(email);
+
+  const canConfirm =
+    !!selectedDate &&
+    !!selectedTime &&
+    name.trim().length > 1 &&
+    isValidEmail(email) &&
+    !isSubmitting;
+
+  const resetForm = () => {
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setName("");
+    setEmail("");
+    setError(null);
+    setShowSuccess(false);
+    setSuccessData(null);
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  // Reset when the modal is closed by any means (Escape, parent, etc.).
+  useEffect(() => {
+    if (!isOpen) resetForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("deonjose27@gmail.com");
     setCopied(true);
@@ -118,23 +208,54 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   };
 
   const handleConfirmBooking = async () => {
-    if (!selectedDate || !selectedTime || !name || !email || isSubmitting) return;
+    if (!canConfirm || !selectedDate || !selectedTime) return;
+    if (!supabase) {
+      setError("Booking is not configured. Please email me instead.");
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
-    
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
     try {
       const bookingDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
       const bookingDateTime = `${bookingDate} ${selectedTime}:00`;
-      const meetingId = Math.random().toString(36).substring(2, 10);
-      const meetingLink = `https://meet.google.com/${meetingId}`;
-      
-      const { data, error } = await supabase
+
+      // Re-check the slot is still free to avoid a double-booking race.
+      const { data: existing } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('booking_date', bookingDate)
+        .eq('booking_time', selectedTime);
+
+      if (existing && existing.length > 0) {
+        setBookedSlots((prev) => Array.from(new Set([...prev, selectedTime])));
+        setSelectedTime(null);
+        throw new Error('That slot was just booked — please choose another time.');
+      }
+
+      // Valid-format Google Meet code (xxx-xxxx-xxx).
+      const seg = (len: number) =>
+        Array.from(
+          { length: len },
+          () => "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)]
+        ).join("");
+      const meetingLink = `https://meet.google.com/${seg(3)}-${seg(4)}-${seg(3)}`;
+      const calendarUrl = buildGoogleCalendarUrl(
+        bookingDate,
+        selectedTime,
+        meetingLink
+      );
+
+      const { error } = await supabase
         .from('bookings')
         .insert([
           {
-            name,
-            email,
+            name: trimmedName,
+            email: trimmedEmail,
             booking_date: bookingDate,
             booking_time: selectedTime,
             booking_datetime: bookingDateTime,
@@ -146,28 +267,31 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
 
       if (error) throw new Error(error.message);
 
+      // Best-effort confirmation email — don't block success if it fails.
       try {
         await sendBookingConfirmation({
-          name,
-          email,
+          name: trimmedName,
+          email: trimmedEmail,
           date: bookingDate,
           time: selectedTime,
           meetingLink,
         });
-        console.log('Email sent successfully');
       } catch (emailError) {
         console.error('Email sending failed:', emailError);
       }
 
-      setShowSuccess(true);
+      // Reflect the new booking locally so the slot shows as taken.
+      setBookedSlots((prev) => Array.from(new Set([...prev, selectedTime])));
+
       setSuccessData({
-        name,
-        email,
+        name: trimmedName,
+        email: trimmedEmail,
         date: bookingDate,
         time: selectedTime,
-        meetingLink
+        meetingLink,
+        calendarUrl,
       });
-      
+      setShowSuccess(true);
     } catch (error: any) {
       console.error('Booking error:', error);
       setError(error.message || 'Failed to confirm booking. Please try again.');
@@ -181,9 +305,9 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       {/* Backdrop - stays dark for both themes (common modal behavior) */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md"
-        onClick={onClose}
+        onClick={handleClose}
       />
       
       {/* Main Modal - theme aware */}
@@ -192,8 +316,8 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-[#1A1A1A] border-b border-gray-200 dark:border-white/10 p-6 flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Book a Call</h2>
-          <button 
-            onClick={onClose}
+          <button
+            onClick={handleClose}
             className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition"
           >
             <X size={20} className="text-gray-500 dark:text-white/60" />
@@ -288,13 +412,15 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                     {timeSlots.map((time) => {
                       const booked = isTimeBooked(time);
+                      const past = isTimePast(time);
+                      const disabled = !selectedDate || booked || past;
                       return (
                         <button
                           key={time}
-                          onClick={() => !booked && setSelectedTime(time)}
-                          disabled={!selectedDate || booked}
+                          onClick={() => !disabled && setSelectedTime(time)}
+                          disabled={disabled}
                           className={`p-3 rounded-xl border text-sm transition ${
-                            !selectedDate
+                            !selectedDate || past
                               ? "opacity-30 cursor-not-allowed border-gray-200 dark:border-white/5"
                               : booked
                               ? "opacity-30 cursor-not-allowed border-red-300 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10"
@@ -305,6 +431,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                         >
                           {time}
                           {booked && <span className="block text-[8px] text-red-500 dark:text-red-400">Booked</span>}
+                          {past && !booked && <span className="block text-[8px] text-gray-400 dark:text-white/30">Passed</span>}
                         </button>
                       );
                     })}
@@ -347,8 +474,18 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="john.smith@example.com"
-                  className="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-primary dark:focus:border-primary/50"
+                  aria-invalid={emailTouchedInvalid}
+                  className={`w-full bg-gray-100 dark:bg-white/5 border rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none ${
+                    emailTouchedInvalid
+                      ? "border-red-400 dark:border-red-500/50 focus:border-red-400"
+                      : "border-gray-300 dark:border-white/10 focus:border-primary dark:focus:border-primary/50"
+                  }`}
                 />
+                {emailTouchedInvalid && (
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1.5">
+                    Please enter a valid email address.
+                  </p>
+                )}
               </div>
 
               {/* Selected slot summary */}
@@ -366,9 +503,9 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
               {/* Confirm button */}
               <button
                 onClick={handleConfirmBooking}
-                disabled={!selectedDate || !selectedTime || !name || !email || isSubmitting}
+                disabled={!canConfirm}
                 className={`w-full py-4 rounded-xl font-medium transition ${
-                  !selectedDate || !selectedTime || !name || !email || isSubmitting
+                  !canConfirm
                     ? "bg-primary/30 cursor-not-allowed"
                     : "bg-primary hover:bg-primary/80"
                 } text-white`}
@@ -416,10 +553,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
       {/* Success Modal */}
       {showSuccess && successData && (
         <div className="fixed inset-0 z-[250] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => {
-            setShowSuccess(false);
-            onClose();
-          }} />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
           <div className="relative bg-white dark:bg-[#1A1A1A] rounded-3xl border border-primary/30 p-8 max-w-md w-full shadow-2xl">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -450,14 +584,22 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
               </div>
               
               <p className="text-gray-500 dark:text-white/40 text-xs mb-6">
-                A calendar invite has been sent to {successData.email}
+                A confirmation email was sent to {successData.email}. Add the
+                event to your calendar so you don&apos;t miss it.
               </p>
-              
+
+              <a
+                href={successData.calendarUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 mb-3 border border-primary/40 hover:bg-primary/10 rounded-xl text-primary font-medium transition"
+              >
+                <Calendar size={16} />
+                Add to Google Calendar
+              </a>
+
               <button
-                onClick={() => {
-                  setShowSuccess(false);
-                  onClose();
-                }}
+                onClick={handleClose}
                 className="w-full py-3 bg-primary hover:bg-primary/80 rounded-xl text-white font-medium transition"
               >
                 Done

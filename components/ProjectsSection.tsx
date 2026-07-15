@@ -7,41 +7,44 @@ export default function ProjectsSection() {
 
   const projects = [
     {
-      id: 1,
-      number: "01",
-      type: "WEB APP",
-      title: "Lost And Found Tracker",
-      description:
-        "Full-stack MERN application that helps users report, search, and recover lost items through a centralized real-time tracking system.",
-      tags: ["MongoDB", "Express", "React", "Node.js"],
-      image: "/lostFound.png",
-      github: "https://github.com/deonJoseDJV/LostAndFoundTracker2",
-      live: "#",
-    },
+  id: 1,
+  number: "01",
+  type: "WEB APP",
+  title: "Lost & Found Tracker",
+  description:
+    "Full-stack MERN platform for reporting and recovering lost items. A weighted similarity engine ranks potential matches by name (Levenshtein distance), category, color, and brand, returning a confidence score to power a verified claim workflow. Features JWT authentication, image uploads, and advanced search & filtering.",
+  tags: ["React", "Node.js", "Express", "MongoDB", "JWT", "Tailwind CSS"],
+  image: "/lostFound.png",
+  github: "https://github.com/deonJoseDJV/LostAndFoundTracker2",
+  live: "https://your-app.up.railway.app", // ← deploy & put the real URL here
+},
+
     {
-      id: 2,
-      number: "02",
-      type: "AI WEB APP",
-      title: "GPT Chat Application",
-      description:
-        "Full-stack AI chat application powered by OpenAI Chat Completions API, enabling real-time conversational responses with a clean and responsive UI.",
-      tags: ["OpenAI API", "Next.js", "React", "Node.js"],
-      image: "/gpt.png",
-      github: "https://github.com/deonJoseDJV/GPT",
-      live: "#",
-    },
-    {
-      id: 3,
-      number: "03",
-      type: "WEB APP",
-      title: "Zoom Clone",
-      description:
-        "Full-stack video conferencing web application with real-time communication, authentication, and meeting rooms.",
-      tags: ["MongoDB", "Express", "React", "Node.js", "WebRTC", "Socket.io"],
-      image: "/zoom.png",
-      github: "https://github.com/deonJoseDJV/zoomCloneFinal",
-      live: "#",
-    },
+  id: 2,
+  number: "02",
+  type: "FULL-STACK AI APP",
+  title: "SigmaGPT — AI Chat Application",
+  description:
+    "A full-stack ChatGPT-style assistant built on the MERN stack and the OpenAI API. Features persistent multi-thread conversations stored in MongoDB, live markdown & code-block rendering, and a responsive glassmorphism UI. Users can create, revisit, and delete chat threads with history saved across sessions.",
+  tags: ["React", "Node.js", "Express", "MongoDB", "OpenAI API"],
+  image: "/gpt.png",
+  github: "https://github.com/deonJoseDJV/gpt",
+  live: "#",
+},
+
+   {
+  id: 3,
+  number: "03",
+  type: "WEB APP",
+  title: "Meetly",
+  description:
+    "Full-stack video conferencing platform enabling real-time video, audio, and chat across multiple participants. Features secure JWT authentication, dynamic meeting rooms, and peer-to-peer streaming powered by WebRTC and Socket.io.",
+  tags: ["MongoDB", "Express", "React", "Node.js", "WebRTC", "Socket.io"],
+  image: "/zoom.png",
+  github: "https://github.com/deonJoseDJV/meetlyCall.git",
+  live: "#",
+},
+
   ];
 
   return (

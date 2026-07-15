@@ -9,11 +9,14 @@ import SkillsSection from "@/components/SkillsSection";
 import OtherSection from "@/components/OtherSection";
 import ContactModal from "@/components/ContactModal";
 
+type ChatMessage = { role: "user" | "assistant"; content: string };
+
 export default function Home() {
   const ref = useRef<HTMLDivElement>(null);
+  const threadRef = useRef<HTMLDivElement>(null);
 
   const [input, setInput] = useState("");
-  const [reply, setReply] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
 
@@ -32,30 +35,47 @@ export default function Home() {
     return () => el.removeEventListener("mousemove", handleMove);
   }, []);
 
+  // ================= AUTO-SCROLL THREAD =================
+  useEffect(() => {
+    threadRef.current?.scrollTo({
+      top: threadRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
+
   // ================= SEND MESSAGE =================
   const sendMessage = async (text?: string) => {
-    const messageToSend = text ?? input;
-    if (!messageToSend.trim()) return;
+    const messageToSend = (text ?? input).trim();
+    if (!messageToSend || loading) return;
+
+    const nextMessages: ChatMessage[] = [
+      ...messages,
+      { role: "user", content: messageToSend },
+    ];
+    setMessages(nextMessages);
+    setInput("");
 
     try {
       setLoading(true);
-      setReply("");
 
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          message: messageToSend,
-        }),
+        body: JSON.stringify({ messages: nextMessages }),
       });
 
       const data = await res.json();
-      setReply(data.reply);
-      setInput("");
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.reply ?? "Something went wrong." },
+      ]);
     } catch (err) {
-      setReply("Something went wrong.");
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Something went wrong." },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -135,11 +155,51 @@ export default function Home() {
               dark:shadow-[0_30px_100px_rgba(0,0,0,0.55)]
             "
           >
-            <p className="text-black/50 dark:text-white/50 text-sm mb-6 min-h-[24px]">
-              {loading
-                ? "Thinking..."
-                : reply || "Ask me anything about Deon..."}
-            </p>
+            {/* MESSAGE THREAD */}
+            {messages.length === 0 && !loading ? (
+              <p className="text-black/50 dark:text-white/50 text-sm mb-6 text-center">
+                Ask me anything about Deon...
+              </p>
+            ) : (
+              <div
+                ref={threadRef}
+                className="
+                  mb-6 max-h-[320px] overflow-y-auto
+                  flex flex-col gap-3 text-left
+                  pr-1
+                "
+              >
+                {messages.map((m, i) => (
+                  <div
+                    key={i}
+                    className={
+                      m.role === "user" ? "flex justify-end" : "flex justify-start"
+                    }
+                  >
+                    <div
+                      className={`
+                        max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed
+                        ${
+                          m.role === "user"
+                            ? "bg-primary text-white rounded-br-sm"
+                            : "bg-black/[0.05] dark:bg-white/[0.08] text-black/80 dark:text-white/80 rounded-bl-sm"
+                        }
+                      `}
+                    >
+                      {m.content}
+                    </div>
+                  </div>
+                ))}
+
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="rounded-2xl rounded-bl-sm bg-black/[0.05] dark:bg-white/[0.08] px-4 py-2.5 text-sm text-black/50 dark:text-white/50">
+                      Thinking...
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* QUICK BUTTONS */}
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
